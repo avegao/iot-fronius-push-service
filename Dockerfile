@@ -3,7 +3,7 @@ FROM golang:1.10.0-alpine AS build
 ARG VCS_REF="unknown"
 ARG BUILD_DATE="unknown"
 
-WORKDIR /go/src/github.com/avegao/iot-fronius
+WORKDIR /go/src/github.com/avegao/iot-fronius-push-service
 
 RUN apk add --no-cache --update \
         curl \
@@ -25,14 +25,14 @@ MAINTAINER "Álvaro de la Vega Olmedilla <alvarodlvo@gmail.com>"
 
 ENV GRPC_VERBOSITY ERROR
 
-RUN addgroup iot-fronius && \
-    adduser -D -G iot-fronius iot-fronius
+RUN addgroup iot-fronius-push-service && \
+    adduser -D -G iot-fronius-push-service iot-fronius-push-service
 
-USER iot-fronius
+USER iot-fronius-push-service
 
 WORKDIR /app
 
-COPY --from=build --chown=iot-fronius:iot-fronius /go/bin/iot-fronius /app/iot-fronius
+COPY --from=build --chown=iot-fronius-push-service:iot-fronius-push-service /go/bin/iot-fronius-push-service /app/iot-fronius-push-service
 
 EXPOSE 50000/tcp
 
@@ -40,4 +40,4 @@ LABEL com.avegao.iot.fronius.vcs_ref=$VCS_REF \
       com.avegao.iot.fronius.build_date=$BUILD_DATE \
       maintainer="Álvaro de la Vega Olmedilla <alvarodlvo@gmail.com>"
 
-ENTRYPOINT ["./iot-fronius"]
+ENTRYPOINT ["./iot-fronius-push-service"]
