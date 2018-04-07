@@ -21,17 +21,17 @@ func (powerflow CurrentPowerflow) ToGrpcRequest() (request pb.Powerflow) {
 	request.Site = powerflow.Body.Site.ToGrpcRequest()
 
 	inverters := powerflow.Body.Inverters
-	requestInverters := make([]*pb.InverterPowerflow, 0)
+	request.Inverter = make([]*pb.InverterPowerflow, 0)
 
 	for _, inverter := range inverters {
-		requestInverters = append(requestInverters, inverter.ToGrpcRequest())
+		request.Inverter = append(request.Inverter, inverter.ToGrpcRequest())
 	}
 
 	ohmpilots := powerflow.Body.SmartLoads.Ohmpilots
-	requestOhmpilots := make([]*pb.OhmpilotPowerflow, 0)
+	request.Ohmpilot = make([]*pb.OhmpilotPowerflow, 0)
 
 	for _, ohmpilot := range ohmpilots {
-		requestOhmpilots = append(requestOhmpilots, ohmpilot.ToGrpcRequest())
+		request.Ohmpilot = append(request.Ohmpilot, ohmpilot.ToGrpcRequest())
 	}
 
 	return
