@@ -10,6 +10,7 @@ package iot_fronius;
 service Fronius {
     rpc InsertCurrentDataPowerflow (Powerflow) returns (SuccessResponse);
     rpc InsertCurrentDataMeter (CurrenDataMeterRequest) returns (SuccessResponse);
+    rpc InsertCurrentDataInverter (CurrenDataInverterRequest) returns (SuccessResponse);
 }
 
 message SuccessResponse {
@@ -111,4 +112,12 @@ message MeterDetails {
 
 message CurrenDataMeterRequest {
     repeated CurrentDataMeter elements = 1;
+}
+
+message CurrenDataInverterRequest {
+    repeated int32 dayEnergy = 1;
+    repeated int32 pac = 2;
+    repeated int32 totalEnergy = 3;
+    repeated int32 yearEnergy = 4;
+    int64 timestamp = 5;
 }

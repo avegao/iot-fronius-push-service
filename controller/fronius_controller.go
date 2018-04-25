@@ -9,6 +9,7 @@ import (
 	"github.com/avegao/iot-fronius-push-service/entity/fronius/current_powerflow"
 	"github.com/avegao/iot-fronius-push-service/service"
 	"context"
+	"github.com/avegao/iot-fronius-push-service/entity/fronius/current_data/inverter"
 )
 
 // @Router /fronius/current_data/meter [post]
@@ -68,10 +69,23 @@ func PostCurrentDataInverterAction(ginContext *gin.Context) {
 
 	logger.WithField("body", string(body)).Debug()
 
-	//var currentData CurrentDataMeter
-	//json.Unmarshal(body, &currentData)
-	//
-	//logger.WithField("body", currentData).Debug()
+	var currentData froniusCurrentDataInverter.CurrentDataInverter
+	json.Unmarshal(body, &currentData)
+
+	request := currentData.ToGrpcRequest()
+
+	connection, err := service.CreateConnection()
+	if err != nil {
+		logger.WithError(err).Error()
+	}
+
+	client := service.CreateClient(connection)
+	ctx := context.Background()
+
+	response, err := client.InsertCurrentDataInverter(ctx, request)
+	if err != nil || !response.Success {
+		logger.WithError(err).Error()
+	}
 }
 
 // @Router /fronius/current_data/powerflow [post]

@@ -1,6 +1,9 @@
 package froniusCurrentDataInverter
 
-import "github.com/avegao/iot-fronius-push-service/entity/fronius"
+import (
+	"github.com/avegao/iot-fronius-push-service/entity/fronius"
+	pb "github.com/avegao/iot-fronius-push-service/resource/grpc"
+)
 
 type CurrentDataInverter struct {
 	Body struct {
@@ -26,4 +29,40 @@ type CurrentDataInverter struct {
 		} `json:"YEAR_ENERGY"`
 	} `json:"Body"`
 	Head fronius.ResponseHeader `json:"Head"`
+}
+
+func (currentData CurrentDataInverter) ToGrpcRequest() *pb.CurrenDataInverterRequest {
+	dayEnergyArray := make([]int32, 0)
+
+	for _, element := range currentData.Body.DayEnergy.Values {
+		dayEnergyArray = append(dayEnergyArray, int32(element))
+	}
+
+	pacArray := make([]int32, 0)
+
+	for _, element := range currentData.Body.Pac.Values {
+		pacArray = append(pacArray, int32(element))
+	}
+
+	totalEnergyArray := make([]int32, 0)
+
+	for _, element := range currentData.Body.TotalEnergy.Values {
+		totalEnergyArray = append(totalEnergyArray, int32(element))
+	}
+
+	yearEnergyArray := make([]int32, 0)
+
+	for _, element := range currentData.Body.YearEnergy.Values {
+		yearEnergyArray = append(yearEnergyArray, int32(element))
+	}
+
+	timestamp := currentData.Head.Timestamp.Unix()
+
+	return &pb.CurrenDataInverterRequest{
+		DayEnergy:   dayEnergyArray,
+		Pac:         pacArray,
+		TotalEnergy: totalEnergyArray,
+		YearEnergy:  yearEnergyArray,
+		Timestamp:   timestamp,
+	}
 }
