@@ -37,7 +37,7 @@ WORKDIR /app
 
 COPY --from=build --chown=iot-fronius-push-service:iot-fronius-push-service /go/bin/iot-fronius-push-service /app/iot-fronius-push-service
 
-EXPOSE 50000/tcp
+EXPOSE 8080/tcp
 
 LABEL com.avegao.iot.fronius.vcs_ref=$VCS_REF \
       com.avegao.iot.fronius.build_date=$BUILD_DATE \
