@@ -1,4 +1,4 @@
-FROM golang:1.10.1-alpine AS build
+FROM golang:1.10.2-alpine AS build
 
 ARG VCS_REF="unknown"
 ARG BUILD_DATE="unknown"
@@ -39,8 +39,8 @@ COPY --from=build --chown=iot-fronius-push-service:iot-fronius-push-service /go/
 
 EXPOSE 8080/tcp
 
-LABEL com.avegao.iot.fronius.vcs_ref=$VCS_REF \
-      com.avegao.iot.fronius.build_date=$BUILD_DATE \
+LABEL com.avegao.iot.fronius.push.vcs_ref=$VCS_REF \
+      com.avegao.iot.fronius.push.build_date=$BUILD_DATE \
       maintainer="Álvaro de la Vega Olmedilla <alvarodlvo@gmail.com>"
 
 ENTRYPOINT ["./iot-fronius-push-service"]

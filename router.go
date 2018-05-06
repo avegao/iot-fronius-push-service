@@ -26,4 +26,5 @@ func initFroniusCurrentDataRouter(router *gin.RouterGroup) {
 	currentDataRouter.POST("/powerflow", froniusController.PostCurrentDataPowerflowAction)
 	currentDataRouter.POST("/sensor_card", froniusController.PostCurrentDataSensorCardAction)
 	currentDataRouter.POST("/string_control", froniusController.PostCurrentDataStringControlAction)
+	currentDataRouter.POST("/io_states", froniusController.PostCurrentDataIoStatesAction)
 }

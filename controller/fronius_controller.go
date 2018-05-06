@@ -10,14 +10,9 @@ import (
 	"github.com/avegao/iot-fronius-push-service/service"
 	"context"
 	"github.com/avegao/iot-fronius-push-service/entity/fronius/current_data/inverter"
+	"github.com/avegao/iot-fronius-push-service/entity/fronius/io_state"
 )
 
-// @Router /fronius/current_data/meter [post]
-// @ID charger-index
-// @Summary Get all chargers
-// @Description Get all chargers
-// @Produce json
-// @Success 200 {} object "Array of chargers"
 func PostCurrentDataMeterAction(ginContext *gin.Context) {
 	logger := gocondi.GetContainer().GetLogger()
 
@@ -50,12 +45,6 @@ func PostCurrentDataMeterAction(ginContext *gin.Context) {
 	}
 }
 
-// @Router /fronius/current_data/inverter [post]
-// @ID charger-index
-// @Summary Get all chargers
-// @Description Get all chargers
-// @Produce json
-// @Success 200 {} object "Array of chargers"
 func PostCurrentDataInverterAction(ginContext *gin.Context) {
 	logger := gocondi.GetContainer().GetLogger()
 
@@ -88,12 +77,6 @@ func PostCurrentDataInverterAction(ginContext *gin.Context) {
 	}
 }
 
-// @Router /fronius/current_data/powerflow [post]
-// @ID charger-index
-// @Summary Get all chargers
-// @Description Get all chargers
-// @Produce json
-// @Success 200 {} object "Array of chargers"
 func PostCurrentDataPowerflowAction(ginContext *gin.Context) {
 	logger := gocondi.GetContainer().GetLogger()
 
@@ -125,12 +108,6 @@ func PostCurrentDataPowerflowAction(ginContext *gin.Context) {
 	}
 }
 
-// @Router /fronius/current_data/sensor_card [post]
-// @ID charger-index
-// @Summary Get all chargers
-// @Description Get all chargers
-// @Produce json
-// @Success 200 {} object "Array of chargers"
 func PostCurrentDataSensorCardAction(ginContext *gin.Context) {
 	logger := gocondi.GetContainer().GetLogger()
 
@@ -150,12 +127,6 @@ func PostCurrentDataSensorCardAction(ginContext *gin.Context) {
 	//logger.WithField("body", currentData).Debug()
 }
 
-// @Router /fronius/current_data/string_control [post]
-// @ID charger-index
-// @Summary Get all chargers
-// @Description Get all chargers
-// @Produce json
-// @Success 200 {} object "Array of chargers"
 func PostCurrentDataStringControlAction(ginContext *gin.Context) {
 	logger := gocondi.GetContainer().GetLogger()
 
@@ -173,4 +144,38 @@ func PostCurrentDataStringControlAction(ginContext *gin.Context) {
 	//json.Unmarshal(body, &currentData)
 	//
 	//logger.WithField("body", currentData).Debug()
+}
+
+func PostCurrentDataIoStatesAction(ginContext *gin.Context) {
+	logger := gocondi.GetContainer().GetLogger()
+
+	defer ginContext.Request.Body.Close()
+
+	body, err := ioutil.ReadAll(ginContext.Request.Body)
+
+	if err != nil {
+		logger.WithError(err).Error()
+	}
+
+	var ioState froniusIoState.IoState
+	if err = json.Unmarshal(body, &ioState); err != nil {
+		logger.WithError(err).Error()
+	}
+
+	logger.WithField("ioState", ioState).Debug()
+
+	request := ioState.ToGrpcRequest()
+
+	connection, err := service.CreateConnection()
+	if err != nil {
+		logger.WithError(err).Error()
+	}
+
+	client := service.CreateClient(connection)
+	ctx := context.Background()
+
+	response, err := client.InsertCurrentIoState(ctx, &request)
+	if err != nil || !response.Success {
+		logger.WithError(err).Error()
+	}
 }
